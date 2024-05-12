@@ -9,7 +9,7 @@
         "WhiteBotLevel": 0,
         "BlackBotLevel": 5,
         "BotScoringType": "NumberAndPotential",
-        "BotDelayMS": 0,
+        "BotDelayMS": 1000,
         "NoRandom": false,
         "Optimization": "O1"
     },
