@@ -45,17 +45,17 @@ private:
             find_turns(x, y, mtx);
         }
         auto now_turns = turns;
-        auto now_have_beats = have_beats;
+        bool now_have_beats = have_beats;
 
         if (!now_have_beats && state != 0) {
            return find_best_turns_rec(mtx, 1 - color, 0, alpha);
         }
         double best_score = -1;
-        for (auto turn : turns) {
-            size_t new_state = next_move.size();
+        for (auto turn : now_turns) {
+            size_t next_state = next_move.size();
             double score;
             if (now_have_beats) {
-                score = find_first_best_turn(make_turn(mtx, turn), color, turn.x2, turn.y2, new_state, best_score);
+                score = find_first_best_turn(make_turn(mtx, turn), color, turn.x2, turn.y2, next_state, best_score);
             }
             else {
                 score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, 0, best_score);
@@ -64,7 +64,7 @@ private:
             if (score > best_score) {
                 best_score = score;
                 next_move[state] = turn;
-                next_best_state[state] = (now_have_beats ? new_state : - 1);
+                next_best_state[state] = (now_have_beats ? next_state : - 1);
             }
         }
         return best_score;   
@@ -77,7 +77,7 @@ private:
         if (depth == Max_depth) {
             return calc_score(mtx, (depth % 2 == color));
         }
-        if (x == -1) {
+        if (x != -1) {
             find_turns(x, y, mtx);
         }
         else {
@@ -106,6 +106,18 @@ private:
             min_score = min(min_score, score);
             max_score = max(max_score, score);
             // alpha-beta
+            if (depth % 2) {
+                alpha = max(alpha, max_score);
+            }
+            else {
+                beta = min(beta, min_score);
+            }
+            if (optimization != "O0" && alpha > beta) {
+                break;
+            }
+            if (optimization == "O2" && alpha == beta) {
+                return (depth % 2 ? max_score + 1 : min_score - 1);
+            }
         }
         return (depth % 2 ? max_score : min_score);
     }
